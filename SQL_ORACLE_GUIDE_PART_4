@@ -62,7 +62,7 @@
 |  and productivity.                             |
 |                                               |
 \-----------------------------------------------/
-
+Examples in issue Premier League
 ==================================================
 
 /-----------------------------------------------\
@@ -175,6 +175,46 @@ END;
 =============
   EXAMPLE:
 =============
+Sequence with adding employees:
+
+
+--sequence
+create sequence descending_numbers
+
+increment by -10
+
+start with 1000
+
+minvalue 100
+
+maxvalue 1000
+
+cache 100;
+
+--adding employees
+
+Insert into employees (employee_id, first_name, last_name, email, hire_date, job_id) 
+
+values(descending_numbers.nextval,'Jan', 'Grgl','abcaaa@gukson.com',TO_DATE('23/04/2024', 'DD/MM/YYYY'),'AD_PRES');
+
+
+Insert into employees (employee_id, first_name, last_name, email, hire_date, job_id) 
+
+values(descending_numbers.nextval,'bAN', 'Grgl','abcaaaa@gukson.com',TO_DATE('23/04/2024', 'DD/MM/YYYY'),'AD_PRES');
+
+
+Insert into employees (employee_id, first_name, last_name, email, hire_date, job_id) 
+
+values(descending_numbers.nextval,'Pan', 'Grgl','abcaaab@gukson.com',TO_DATE('23/04/2024', 'DD/MM/YYYY'),'AD_PRES');
+
+
+select * from employees
+
+where employee_id >= 300;
+
+
+
+
 ==================================================
 
 /-----------------------------------------------\
@@ -196,7 +236,12 @@ END;
 |  INSERT, UPDATE, and DELETE.                  |
 |                                               |
 \-----------------------------------------------/
+=======
+Example:
+=======
+create index EMP_HIRE_DATE_INDEX 
 
+on employees (hire_date);
 ==================================================
 
 /-----------------------------------------------\
@@ -222,7 +267,7 @@ END;
 =============
   EXAMPLE:
 =============
-
+Example is on the Internet it is very easy.
 ==================================================
 
 /-----------------------------------------------\
@@ -261,6 +306,32 @@ select e.first_name, e.last_name, e.salary from employees e
 
 where e.department_id = 80; --id sales;
 
+
+--intersect and minus are easy, find it by yourself
+
+--Coalesce and rollup
+select coalesce(m.first_name ||' '|| m.last_name, 'All managers') as "Name", EXTRACT(YEAR FROM e.hire_date) as "Year", count(e.employee_id)
+
+from employees m
+
+join employees e on m.employee_id = e.manager_id
+
+
+group by ROLLUP (m.first_name ||' '|| m.last_name, EXTRACT(YEAR FROM e.hire_date));
+
+--rollup
+select d.department_name, j.job_title, sum(e.salary) from employees e
+
+join departments d on d.department_id = e.department_id
+
+join jobs j on j.job_id = e.job_id
+
+where (select count(ee.employee_id) from employees ee
+
+where ee.department_id = e.department_id) > 2
+
+
+group by rollup (d.department_name, j.job_title) order by sum(e.salary) desc; 
 
 
 
